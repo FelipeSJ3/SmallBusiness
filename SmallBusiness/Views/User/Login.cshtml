@@ -1,0 +1,13 @@
+﻿@model LoginViewModel
+<form asp-action="Login" asp-controller="User" method="post" class="needs p-5 mx-auto align-middle mt-5 border border-primary rounded" style="width: 400px;">
+    <div class="form-group">
+        <label asp-for="Login"></label>
+        <input asp-for="Login" class="form-control" autocomplete="off" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" class="form-control" />
+    </div>
+    <button class="btn btn-primary" type="submit">Log In</button>
+</form>
+<div class="text-danger" asp-validation-summary="ModelOnly"><br /></div>

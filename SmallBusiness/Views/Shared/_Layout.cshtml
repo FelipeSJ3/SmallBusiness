@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet"
+          asp-href-include="/lib/twitter-bootstrap/css/*.min.css"
+          asp-href-exclude="**/*-reboot*,**/*-grid*" />
+    <title>Small Business Name</title>
+    <style>
+        .input-validation-error {
+            border-color: red;
+        }
+
+        .col-form-label {
+            text-align: right
+        }
+    </style>
+    <script src="~/lib/jquery/jquery.min.js"></script>
+</head>
+<body>
+    <div>
+        @RenderBody()
+    </div>
+</body>
+</html>

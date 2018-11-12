@@ -1,0 +1,95 @@
+﻿@model CustomerListViewModel
+
+@{
+    bool isAdmin = (await AuthorizationService.AuthorizeAsync(User, "IsAdmin")).Succeeded;
+}
+<div class="align-content-center m-5">
+    <form id="FilterForm" asp-action="List" method="post">
+        <div class="form-group row">
+            <label asp-for="Filters.NameFilter" class="col-1 col-form-label form-control-sm">Name:</label>
+            <input asp-for="Filters.NameFilter" type="text" class="form-control form-control-sm col-3" />
+            <label asp-for="Filters.GenderFilter" class="col-1 col-form-label form-control-sm">Gender:</label>
+            <select asp-for="Filters.GenderFilter" asp-items="Model.Genders" class="form-control form-control-sm col-3">
+                <option selected value="">Select a Gender</option>
+            </select>
+            <input type="submit" class="btn btn-primary btn-sm col-1 mx-3" />
+        </div>
+        <div class="form-group row">
+            <label asp-for="Filters.CityFilter" class="col-1 col-form-label form-control-sm">City:</label>
+            <select id="CitySelect" asp-for="Filters.CityFilter" asp-items="Model.Cities" class="form-control form-control-sm col-3">
+                <option selected value="">Select a City</option>
+            </select>
+            <label asp-for="Filters.RegionFilter" class="col-1 col-form-label form-control-sm">Region:</label>
+            <select id="RegionSelect" asp-for="Filters.RegionFilter" asp-items="Model.Regions" class="form-control form-control-sm col-3">
+                <option selected value="">Select a Region</option>
+            </select>
+            <a asp-action="List" class="btn btn-primary btn-sm col-1 mx-3">Clear Fields</a>
+        </div>
+        <div class="form-group row">
+            <label asp-for="Filters.LastPurchaseFromFilter" class="col-1 col-form-label form-control-sm">Last Purchase:</label>
+            <input asp-for="Filters.LastPurchaseFromFilter" type="date" class="form-control form-control-sm col-2" />
+            <label asp-for="Filters.LastPurchaseToFilter" class="col-1 col-form-label form-control-sm" style="text-align: center">until</label>
+            <input asp-for="Filters.LastPurchaseToFilter" type="date" class="form-control form-control-sm col-2" />
+        </div>
+        <div class="form-group row">
+            <label asp-for="Filters.ClassificationFilter" class="col-1 col-form-label form-control-sm">Classification:</label>
+            <select asp-for="Filters.ClassificationFilter" asp-items="Model.Classifications" class="form-control form-control-sm col-3">
+                <option selected value="">Select a Classification</option>
+            </select>
+            @if (isAdmin)
+            {
+                <label asp-for="Filters.SellerFilter" class="col-1 col-form-label form-control-sm">Seller:</label>
+                <select asp-for="Filters.SellerFilter" asp-items="Model.Sellers" class="form-control form-control-sm col-3">
+                    <option selected value="">Select a Seller</option>
+                </select>
+            }
+        </div>
+    </form>
+</div>
+<div class="align-content-center m-5">
+    <table class="table table-bordered table-striped table-sm">
+        <thead class="thead-light">
+            <tr>
+                <th>Classification</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Gender</th>
+                <th>City</th>
+                <th>Region</th>
+                <th>Last Purchase</th>
+                @if (isAdmin)
+                {
+                    <th>Seller</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var c in Model.Customers)
+            {
+                @if (isAdmin || (await AuthorizationService.AuthorizeAsync(User, c.UserId.ToString(), Operations.Read)).Succeeded)
+                {
+                    <tr>
+                        <td>@c.Classification.Name</td>
+                        <td>@c.Name</td>
+                        <td>@c.Phone</td>
+                        <td>@c.Gender.Name</td>
+                        <td>@c.City.Name</td>
+                        <td>@c.Region.Name</td>
+                        <td>@c.LastPurchase.ToShortDateString()</td>
+                        @if (isAdmin)
+                        {
+                            <td>@c.User.Login</td>
+                        }
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+<script>
+    $("#CitySelect").change(function () {
+        if ($("#CitySelect").val() != "") {
+            $("#RegionSelect").val(1);
+        }
+    })
+</script>
