@@ -20,8 +20,8 @@
                 <option selected value="">Select a City</option>
             </select>
             <label asp-for="Filters.RegionFilter" class="col-1 col-form-label form-control-sm">Region:</label>
-            <select id="RegionSelect" asp-for="Filters.RegionFilter" asp-items="Model.Regions" class="form-control form-control-sm col-3">
-                <option selected value="">Select a Region</option>
+            <select id="RegionSelect" asp-for="Filters.RegionFilter" class="form-control form-control-sm col-3">
+                @Html.Partial("RegionPartial", Model.Regions)
             </select>
             <a asp-action="List" class="btn btn-primary btn-sm col-1 mx-3">Clear Fields</a>
         </div>
@@ -88,8 +88,6 @@
 </div>
 <script>
     $("#CitySelect").change(function () {
-        if ($("#CitySelect").val() != "") {
-            $("#RegionSelect").val(1);
-        }
+            $('#RegionSelect').load("/Customer/regionPartial?cityId=" + $("#CitySelect").val());
     })
 </script>

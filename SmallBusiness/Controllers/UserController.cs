@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SmallBusiness.Models;
 using SmallBusiness.Models.Repositories;
 using SmallBusiness.Models.ViewModels;
@@ -30,15 +31,21 @@ namespace SmallBusiness.Controllers
         {
             if (ModelState.IsValid)
             {
-                User _user = repository.Users.FirstOrDefault(u => u.Login == userinput.Login && u.Password == userinput.Password);
+                User _user = repository.Users.Include(u => u.UserRole).FirstOrDefault(u => u.Login == userinput.Login && u.Password == userinput.Password);
                 if (_user != null)
                 {
                     var claims = new List<Claim> {
                         new Claim(ClaimTypes.NameIdentifier, _user.Id.ToString()),
                         new Claim("SellerId", _user.Id.ToString())};
 
-                    if (_user.UserRoleId == 1) claims.Add(new Claim(ClaimTypes.Role, "Administrator"));
-
+                    if (_user.UserRole.IsAdmin)
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, "Administrator"));
+                    }
+                    else
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, "Seller"));
+                    }
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
                     var authProperties = new AuthenticationProperties();

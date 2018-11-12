@@ -25,6 +25,8 @@ namespace SmallBusiness.Models
                 .HasOne(c => c.Classification);
             modelBuilder.Entity<Customer>()
                 .HasOne(c => c.User);
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.UserRole);
         }
     }
 }

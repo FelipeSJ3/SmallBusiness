@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using SmallBusiness.Models.Repositories;
 using SmallBusiness.Models.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SmallBusiness.Controllers
@@ -45,41 +46,52 @@ namespace SmallBusiness.Controllers
 
             if (!string.IsNullOrEmpty(viewModel?.Filters?.GenderFilter))
             {
-                customers = customers.Where(c => c.GenderId.ToString() == viewModel.Filters.GenderFilter);
+                var genderFilter = Convert.ToInt32(viewModel.Filters.GenderFilter);
+                customers = customers.Where(c => c.GenderId == genderFilter);
             }
 
             if (!string.IsNullOrEmpty(viewModel?.Filters?.CityFilter))
             {
-                customers = customers.Where(c => c.CityId.ToString() == viewModel.Filters.CityFilter);
+                var cityFilter = Convert.ToInt32(viewModel.Filters.CityFilter);
+                customers = customers.Where(c => c.CityId == cityFilter);
             }
 
             if (!string.IsNullOrEmpty(viewModel?.Filters?.RegionFilter))
             {
-                customers = customers.Where(c => c.RegionId.ToString() == viewModel.Filters.RegionFilter);
+                var regionFilter = Convert.ToInt32(viewModel.Filters.RegionFilter);
+                customers = customers.Where(c => c.RegionId == regionFilter);
             }
 
             if (!string.IsNullOrEmpty(viewModel?.Filters?.ClassificationFilter))
             {
-                customers = customers.Where(c => c.ClassificationId.ToString() == viewModel.Filters.ClassificationFilter);
+                var classificationFilter = Convert.ToInt32(viewModel.Filters.ClassificationFilter);
+                customers = customers.Where(c => c.ClassificationId == classificationFilter);
             }
 
-            if (viewModel?.Filters?.LastPurchaseFromFilter != null &&
-                viewModel?.Filters?.LastPurchaseToFilter != null)
+            if (viewModel?.Filters?.LastPurchaseFromFilter != null)
             {
-                customers = customers.Where(c => c.LastPurchase >=  viewModel.Filters.LastPurchaseFromFilter && c.LastPurchase <=  viewModel.Filters.LastPurchaseToFilter);
+                customers = customers.Where(c => c.LastPurchase >= viewModel.Filters.LastPurchaseFromFilter);
+            }
+            if (viewModel?.Filters?.LastPurchaseToFilter != null)
+            {
+                customers = customers.Where(c => c.LastPurchase <= viewModel.Filters.LastPurchaseToFilter);
             }
 
             if (!string.IsNullOrEmpty(viewModel?.Filters?.SellerFilter))
             {
                 var isAdmin = authorizationService.AuthorizeAsync(User, "IsAdmin").Result.Succeeded;
-                if (isAdmin) customers = customers.Where(c => c.UserId.ToString() == viewModel.Filters.SellerFilter);
+                if (isAdmin)
+                {
+                    var sellerFilter = Convert.ToInt32(viewModel.Filters.SellerFilter);
+                    customers = customers.Where(c => c.UserId == sellerFilter);
+                }
             }
 
             customers.OrderBy(c => c.Id);
 
             return View(new CustomerListViewModel
             {
-                Customers =customers
+                Customers = customers
                 .Include(c => c.Gender)
                 .Include(c => c.City)
                 .Include(c => c.Region)
@@ -92,6 +104,7 @@ namespace SmallBusiness.Controllers
                     Text = g.Name,
                     Value = g.Id.ToString()
                 }).ToList(),
+                Cit = cityRepository.Cities.Include(c => c.Region).AsNoTracking().ToList(),
                 Cities = cityRepository.Cities.AsNoTracking().Select(c =>
                 new SelectListItem()
                 {
@@ -117,6 +130,22 @@ namespace SmallBusiness.Controllers
                     Value = u.Id.ToString()
                 }).ToList(),
             });
+        }
+
+        public PartialViewResult regionPartial(string cityId)
+        {
+            var _regions = regionRepository.Regions.AsNoTracking();
+            if (!string.IsNullOrEmpty(cityId))
+            {
+                _regions = _regions.Where(r => r.Id == Convert.ToInt32(cityId));
+            }
+            IEnumerable<SelectListItem> filteredRegions = _regions.Select(r =>
+                  new SelectListItem()
+                  {
+                      Text = r.Name,
+                      Value = r.Id.ToString()
+                  }).ToList();
+            return PartialView("RegionPartial", filteredRegions);
         }
     }
 }

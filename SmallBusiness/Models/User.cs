@@ -17,5 +17,6 @@ namespace SmallBusiness.Models
         [Required]
         public int UserRoleId { get; set; }
 
+        public UserRole UserRole { get; set; }
     }
 }

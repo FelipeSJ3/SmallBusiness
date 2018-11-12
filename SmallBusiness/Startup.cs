@@ -57,13 +57,12 @@ namespace SmallBusiness
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            var _customer = new { controller = "Customer", action = "List" };
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
             }
+
             app.UseStatusCodePages();
             app.UseStaticFiles();
 
@@ -79,16 +78,7 @@ namespace SmallBusiness
                         controller = "User",
                         action = "Login"
                     });
-
-                routes.MapRoute(
-                    name: null,
-                    template: "Customer",
-                    defaults: _customer);
-
-                routes.MapRoute(
-                    name: null,
-                    template: "",
-                    defaults: _customer);
+                routes.MapRoute("default", "{controller=Customer}/{action=List}");
             });
         }
     }

@@ -7,6 +7,7 @@ namespace SmallBusiness.Models.ViewModels
     {
         public IEnumerable<Customer> Customers { get; set; }
         public IEnumerable<SelectListItem> Genders { get; set; }
+        public IEnumerable<City> Cit { get; set; }
         public IEnumerable<SelectListItem> Cities { get; set; }
         public IEnumerable<SelectListItem> Regions { get; set; }
         public IEnumerable<SelectListItem> Classifications { get; set; }

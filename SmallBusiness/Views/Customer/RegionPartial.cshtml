@@ -1,0 +1,7 @@
+﻿@model IEnumerable<SelectListItem>
+
+<option selected value="">Select a Region</option>
+@foreach (var item in Model)
+{
+    <option value="@item.Value">@item.Text</option>
+}
